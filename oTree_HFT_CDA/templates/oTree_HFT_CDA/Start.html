@@ -126,6 +126,11 @@ input:checked + .slider:before {
   stroke-width:2px;
 }
 
+.others_line{
+  stroke:rgb(2, 3, 4);
+  stroke-width:2px;
+}
+
 .green_bar{
   fill:#6edd68;
   opacity: 0.5;
@@ -263,7 +268,7 @@ START BUTTON LOGIC //may the force be with you
         //CHANGE TABLE VALUE
         $('#player_role').html('Maker');
 
-        Spread_Graph.drawLine(); // Auto input spread
+        Spread_Graph.drawMyLine(); // Auto input spread
         //send the order if not button pressed (reduces the chance of double orders)
     }
     //TURN THE REST OF THE BUTTONS OFF
@@ -353,6 +358,8 @@ END BUTTON LOGIC
 var Spread_Graph = {};
 var Profit_Graph = {};
 
+var Other_Maker_lines = {};
+
 var n = 20; 
 var data = d3.range(17).map(function(d) { return  0}); //Testing Purposes
 var max_spread = 10; // Pull from Constansts
@@ -392,7 +399,7 @@ var auto_spread = 2;
   function svgClickListener(){
       spread_svg.on('click',function(d) { 
         role = $("#player_role").text();
-        alert("At least this is being called");
+        //alert("At least this is being called");
         if(role == "Maker"){
 
         //The dimensions the svg take up
@@ -423,12 +430,13 @@ var auto_spread = 2;
         
         spreadChange(my_spread);
         //Time to draw the lasers tat go into the spread graph
-        drawSpreadLine(my_spread);
+        
+        drawMySpreadLine(my_spread);
         }
       });
   }
 
-  function drawSpreadLine(my_spread = auto_spread){
+  function drawMySpreadLine(my_spread = auto_spread){
        d3.selectAll(".my_line").remove();
        d3.selectAll("rect").remove();
        spread_y = document.getElementById("spread-graph").getBoundingClientRect().top;
@@ -439,7 +447,6 @@ var auto_spread = 2;
        y_coordinate = svg_middle_y/money_ratio;
       // console.log(y_coordinate);
       //Ratio between the distance and the mid
-      
 
     your_spread_line_top = spread_svg.append("svg:line")
                .attr("x1", spread_width - 35)
@@ -476,6 +483,81 @@ var auto_spread = 2;
                     .attr("x2", spread_width - 85);         
   }
 
+
+  function drawOthersSpreadLine(my_spread, ordertoken_buy, ordertoken_sell, speed){
+        spread_y = document.getElementById("spread-graph").getBoundingClientRect().top;
+
+        //Where the grey middle line is
+        svg_middle_y = spread_height/2 - 90;
+        money_ratio =  max_spread/my_spread;
+        y_coordinate = svg_middle_y/money_ratio;
+        // console.log(y_coordinate);
+        //Ratio between the distance and the mid
+
+        your_spread_line_top = spread_svg.append("svg:line")
+               .attr("x1", spread_width - 35)
+               .attr("y1", svg_middle_y - y_coordinate)
+               .attr("x2", spread_width)
+               .attr("y2", svg_middle_y - y_coordinate)
+               .attr("class","others_line");
+
+
+        your_spread_line_bottom = spread_svg.append("svg:line")
+               .attr("x1", spread_width - 35)
+               .attr("y1", y_coordinate + svg_middle_y)
+               .attr("x2", spread_width)
+               .attr("y2", y_coordinate + svg_middle_y)
+               .attr("class","others_line");
+
+        // for removing when a transation occurs
+        Other_Maker_lines[ordertoken_sell] = [your_spread_line_top, your_spread_line_bottom]
+        Other_Maker_lines[ordertoken_buy] = [your_spread_line_top, your_spread_line_bottom]
+
+        addOthersLineAnimation([your_spread_line_top, your_spread_line_bottom]);
+        //Timeout is whether or not speed is on
+  }
+
+function addOthersLineAnimation(lines){
+    //SETTING THE SPREAD TO THE LINE
+    for( i = 0; i < 2; i++){
+      add_animation = lines[i]
+                      .transition()
+                      // duration is whether or not speed is on
+                      .duration(500)
+                      .attr("x1", 85)
+                      .attr("x2", spread_width - 85); 
+    }      
+      
+  }
+  
+
+  function drawTransactionBar(my_spread,svg_middle_y,y_coordinate,side){
+   //take into account
+   var bar_color = "green_bar";
+
+   //if not other maker within the spread
+   if(side === 'B'){
+
+     your_bar_rect = spread_svg.append("svg:rect")
+                .attr("x", spread_width - (spread_width - 85) + 40)
+                .attr("y", svg_middle_y)
+                .attr("width", (spread_width - 220) / 2)
+                .attr("height", y_coordinate)
+                .attr("class",bar_color);
+   } else if(side === 'S'){
+     newY = y_coordinate * -1;
+
+
+     your_bar_rect = spread_svg.append("svg:rect")
+                .attr("x", spread_width - (spread_width - 85) + 40)
+                .attr("y", svg_middle_y - y_coordinate)
+                .attr("width", (spread_width - 220) / 2)
+                .attr("height", y_coordinate)
+                .attr("class",bar_color);
+
+   }
+ }
+
   function drawSpreadBar(my_spread,svg_middle_y,y_coordinate){
     //take into account
     var bar_color = "";
@@ -492,7 +574,15 @@ var auto_spread = 2;
 
   function clearGraph(){
     d3.selectAll(".my_line").remove();
+    d3.selectAll(".others_line").remove();
     d3.selectAll("rect").remove();
+  }
+
+  function removeOtherMakerLine(order_token){
+    var lines_to_remove = Other_Maker_lines[order_token];
+    lines_to_remove[0].remove();
+    lines_to_remove[1].remove();
+    
   }
 
   function spreadChange(my_spread = auto_spread){
@@ -512,7 +602,8 @@ var auto_spread = 2;
   }
 
   Spread_Graph.start = drawStartState;
-  Spread_Graph.drawLine = drawSpreadLine;
+  Spread_Graph.drawMyLine = drawMySpreadLine;
+  Spread_Graph.drawOthersLine = drawOthersSpreadLine;
   Spread_Graph.animateLine = addLineAnimation;
   Spread_Graph.drawBar = drawSpreadBar;
   Spread_Graph.listen = svgClickListener;
