@@ -1,0 +1,12 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+{% load staticfiles %}
+
+{% block scripts %}
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="{% static 'node_modules/@webcomponents/...' %}"></script> 
+    <link rel="import" href="hello_world.html">
+    <hello-world name="@Patrick">
+    	
+    </hello-world>
+{% endblock %}

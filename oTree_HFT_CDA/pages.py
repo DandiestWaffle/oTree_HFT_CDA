@@ -15,6 +15,10 @@ class Start(Page):
 #    timeout_seconds = 45
     pass
 
+class index(Page):
+#    timeout_seconds = 45
+    pass
+
 
 class ResultsWaitPage(WaitPage):
 
@@ -27,6 +31,7 @@ class Results(Page):
 
 page_sequence = [
     PreWaitPage,
+    index,
     Start,
     ResultsWaitPage,
     Results
