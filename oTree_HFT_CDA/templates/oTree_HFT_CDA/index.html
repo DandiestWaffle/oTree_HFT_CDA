@@ -11,6 +11,13 @@
     <script type="module" src="{% static 'oTree_HFT_CDA/profit-graph/profit-graph.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/info-table/info-table.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/spread-graph/spread-graph.js' %}"></script>
+   
+<script>
+    document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}");
+
+</script>
+
+
 {% endblock %}
 
 {% block content %}
@@ -23,7 +30,7 @@
     }
 </style>
     <div class="front_end_controller">
-        <info-table player_id="{{player.id_in_group}}"></info-table>
+        <info-table id="info-table"></info-table>
         <profit-graph></profit-graph>
     </div>
 {% endblock %}

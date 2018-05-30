@@ -92,6 +92,12 @@ class InfoTable extends PolymerElement {
       }
     };
   }
+
+  setAttrib(){
+    console.log("Dan and patrick are cool");
+  }
+
+
 }
 
 window.customElements.define('info-table', InfoTable);
