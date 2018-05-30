@@ -35,6 +35,10 @@ class Constants(BaseConstants):
     num_rounds = 1
     speed_cost = 0.1
 
+    default_maker_spread = 2
+    max_spread = 10
+
+
     inv_py = os.path.join(os.getcwd(), 'oTree_HFT_CDA/exos/investor.py')
     inv_url = 'ws://127.0.0.1:8000/hft_investor/'   
     inv_csv = os.path.join(os.getcwd(), 'raw/inv_test.csv')
