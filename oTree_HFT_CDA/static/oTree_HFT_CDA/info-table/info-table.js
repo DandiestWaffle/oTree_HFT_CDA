@@ -3,6 +3,7 @@ import {html, PolymerElement} from '../node_modules/@polymer/polymer/polymer-ele
  * @customElement
  * @polymer
  */
+ 
 class InfoTable extends PolymerElement {
   static get template() {
     return html`
@@ -38,11 +39,11 @@ class InfoTable extends PolymerElement {
     </table>
     `;
   }
+
   static get properties() {
     return {
       player_id: {
-        type: String,
-        value:"this"
+        type: String
       },
       num_traders: {
         type: String,
@@ -92,12 +93,6 @@ class InfoTable extends PolymerElement {
       }
     };
   }
-
-  setAttrib(){
-    console.log("Dan and patrick are cool");
-  }
-
-
 }
 
 window.customElements.define('info-table', InfoTable);

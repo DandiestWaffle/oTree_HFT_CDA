@@ -11,7 +11,10 @@ class ProfitGraph extends PolymerElement {
           display: block;
         }
       </style>
-      <h2>Hello [[prop1]]!</h2>
+      <svg id="profit-graph"  >
+            
+      </svg>
+      <h2>[[prop1]]</h2>
     `;
   }
   static get properties() {
@@ -22,6 +25,7 @@ class ProfitGraph extends PolymerElement {
       }
     };
   }
+
 }
 
 window.customElements.define('profit-graph', ProfitGraph);

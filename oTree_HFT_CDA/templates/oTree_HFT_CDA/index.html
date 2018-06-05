@@ -4,17 +4,19 @@
 
 {% block scripts %}
     <script src="https://d3js.org/d3.v5.js"></script>
-    <!-- See https://goo.gl/OOhYW5 -->
     <link rel="manifest" href="{% static 'oTree_HFT_CDA/manifest.json' %}">
-
     <script src="{% static 'oTree_HFT_CDA/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js' %}"></script>
+
+    <!-- <script type="module" src="{% static 'oTree_HFT_CDA/socket_connection/socket_connection.js' %}"></script> -->
     <script type="module" src="{% static 'oTree_HFT_CDA/profit-graph/profit-graph.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/info-table/info-table.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/spread-graph/spread-graph.js' %}"></script>
-   
+    <script type="module" src="{% static 'oTree_HFT_CDA/input-section/input-section.js' %}"></script>
 <script>
-    document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}");
-
+(function(){
+    //Initializing Table Values
+    document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}"); 
+}());
 </script>
 
 
@@ -29,9 +31,56 @@
         margin-top: -80px;
     }
 </style>
+<script>
+    var oTreeConstants ={};
+    var socketActions = {};
+    (function(){
+
+        //Constant Information fron oTree
+        oTreeConstants.group_id = {{group.id}};
+        oTreeConstants.player_id = {{player.id}};
+        oTreeConstants.player_id_in_group = {{player.id_in_group}};  
+
+        //Socket Connection
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");
+        // alert(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");  
+        socketActions.socket = socket;
+        //     // Handle any errors that occur.
+        socketActions.socket.onerror = function (error) {
+            console.log('WebSocket Error: ' + error);
+        };
+
+        // Show a connected message when the WebSocket is opened.
+        socketActions.socket.onopen = function (event) {
+            console.log('Client has connected to django channels');
+        };
+
+        // Handle messages sent by the server.
+        socketActions.socket.onmessage = function (event) {
+            var obj = jQuery.parseJSON(event.data);
+            if(obj.FPC != undefined){
+                document.querySelector('info-table').setAttribute("fp",obj.FPC);
+            } 
+            // switch statement on type of data parsed from event
+        };
+
+        // Show a disconnected message when the WebSocket is closed.
+        socketActions.socket.onclose = function (event) {
+            console.log('disconnected from oTree');
+        };
+
+        var temp = document.querySelector('#info-table');
+        temp.testFunction();
+    }());
+</script>
     <div class="front_end_controller">
         <info-table id="info-table"></info-table>
-        <profit-graph></profit-graph>
+        <div class="row" style="width:100%; height:100%;">
+        <profit-graph style="width:60%; height:100%; background-color: white; border-left:solid black 1px;"></profit-graph>
+        <spread-graph style=" width:25%; height:100%; margin-left:10px; background-color: white;"></spread-graph>
+        <input-section style="margin-top:160px; width: 10%; height: 100%;"></input-section>
+        </div>
     </div>
 {% endblock %}
 
