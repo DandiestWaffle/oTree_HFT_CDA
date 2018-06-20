@@ -54,7 +54,6 @@ class InputSection extends PolymerElement {
   constructor() {
   super();
   this.socket = socketActions.socket;
-
   }
 
   makerClick(){
