@@ -7,12 +7,15 @@ class SpreadGraph extends PolymerElement {
   static get template() {
     return html`
       <style>
-        :host {
-          display: block;
+        #spread-graph{
+          width: 25%;
+          height:100%;
+          margin-left:10px;
+          background-color:white;
         }
       </style>
        <svg id="spread-graph" ></svg> 
-      <h2>[[prop1]]</h2>
+       <h1>[[prop1]]</h1>
     `;
   }
   static get properties() {
@@ -23,6 +26,9 @@ class SpreadGraph extends PolymerElement {
       }
     };
   }
+
+
+
 
 }
 

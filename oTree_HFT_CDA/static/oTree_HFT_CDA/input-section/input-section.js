@@ -96,7 +96,7 @@ border-radius: 50%;
       <p style="text-align: center; margin-left: 50%; margin-top:50px;">Speed</p>
 <label class="switch" style="margin-left: 45%; margin-top: -20px;" >
           <br>
-          <input type="checkbox" on-click="updatespeed">
+          <input id="speed_checkbox" type="checkbox" on-click="updatespeed">
           <span class="slider round"></span>
 </label>
     `;
@@ -115,19 +115,20 @@ border-radius: 50%;
   constructor() {
     super();
     this.socket = socketActions.socket;
+    //Start as speed false
     this.speed = false;
   }
 
-  makerClick(button_object){
-    if ((button_object.path[0].className  == "button-off") && (button_object.path[0].className != "button-pressed")){
+  makerClick(input_object){
+    if ((input_object.path[0].className  == "button-off") && (input_object.path[0].className != "button-pressed")){
     //     //IF BUTTON IS NOT PRESSED OR ON THEN TURN IT ON AFTER DELAD (Button_Pressed())
 
         /* 
         * Some Wizadry to differentiate between the inputs inside of the input-selection DOM element
-        * button_object.path[0] is the button that is being clicked
-        * button_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
+        * input_object.path[0] is the button that is being clicked
+        * input_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
         * the querySelector can then access each input and we can */
-        button_object.path[0].className = "button-pressed";
+        input_object.path[0].className = "button-pressed";
 
         var msg = {
             type: 'role_change',
@@ -139,7 +140,7 @@ border-radius: 50%;
           this.socket.send(JSON.stringify(msg));
         }
 
-       this.Button_Pressed(button_object);
+       this.Button_Pressed(input_object);
        document.querySelector('info-table').setAttribute("player_role","Maker"); 
 
     //     // Spread_Graph.spread(); // Auto Input Spread
@@ -147,19 +148,19 @@ border-radius: 50%;
     }
        console.log(msg);
      
-     button_object.path[1].querySelector("#out").className = "button-off";
-     button_object.path[1].querySelector("#sniper").className = "button-off";
+     input_object.path[1].querySelector("#out").className = "button-off";
+     input_object.path[1].querySelector("#sniper").className = "button-off";
   }
-  sniperClick(button_object){
-    if ((button_object.path[0].className  == "button-off") && (button_object.path[0].className != "button-pressed")){
+  sniperClick(input_object){
+    if ((input_object.path[0].className  == "button-off") && (input_object.path[0].className != "button-pressed")){
     //     //IF BUTTON IS NOT PRESSED OR ON THEN TURN IT ON AFTER DELAD (Button_Pressed())
 
         /* 
         * Some Wizadry to differentiate between the inputs inside of the input-selection DOM element
-        * button_object.path[0] is the button that is being clicked
-        * button_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
+        * input_object.path[0] is the button that is being clicked
+        * input_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
         * the querySelector can then access each input and we can */
-        button_object.path[0].className = "button-pressed";
+        input_object.path[0].className = "button-pressed";
 
         var msg = {
             type: 'role_change',
@@ -171,7 +172,7 @@ border-radius: 50%;
           this.socket.send(JSON.stringify(msg));
         }
 
-       this.Button_Pressed(button_object);
+       this.Button_Pressed(input_object);
        document.querySelector('info-table').setAttribute("player_role","Sniper"); 
 
     //     // Spread_Graph.spread(); // Auto Input Spread
@@ -179,19 +180,19 @@ border-radius: 50%;
     }
        console.log(msg);
      
-     button_object.path[1].querySelector("#maker").className = "button-off";
-     button_object.path[1].querySelector("#out").className = "button-off";
+     input_object.path[1].querySelector("#maker").className = "button-off";
+     input_object.path[1].querySelector("#out").className = "button-off";
   }
-  outClick(button_object){
-    if ((button_object.path[0].className  == "button-off") && (button_object.path[0].className != "button-pressed")){
+  outClick(input_object){
+    if ((input_object.path[0].className  == "button-off") && (input_object.path[0].className != "button-pressed")){
     //     //IF BUTTON IS NOT PRESSED OR ON THEN TURN IT ON AFTER DELAD (Button_Pressed())
 
         /* 
         * Some Wizadry to differentiate between the inputs inside of the input-selection DOM element
-        * button_object.path[0] is the button that is being clicked
-        * button_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
+        * input_object.path[0] is the button that is being clicked
+        * input_object.path[1] is the actual input-selection element (Shadow DOM that we create using Polymer 3.0), once we access this -
         * the querySelector can then access each input and we can */
-        button_object.path[0].className = "button-on";
+        input_object.path[0].className = "button-on";
 
         var msg = {
             type: 'role_change',
@@ -211,39 +212,46 @@ border-radius: 50%;
     }
        console.log(msg);
      
-     button_object.path[1].querySelector("#maker").className = "button-off";
-     button_object.path[1].querySelector("#sniper").className = "button-off";
+     input_object.path[1].querySelector("#maker").className = "button-off";
+     input_object.path[1].querySelector("#sniper").className = "button-off";
+     //Turn off Speed if it is on the front end
+     input_object.path[1].querySelector("#speed_checkbox").checked = false;
   }
 
-   Button_Pressed(button_object){
+   Button_Pressed(input_object){
         //Wait .5 seconds for button pressed to even for fast players
         // to eliminate spam clicking
-        var button_timer = setTimeout(this.Button_Change.bind(null,button_object),500);
+        var button_timer = setTimeout(this.Button_Change.bind(null,input_object),500);
     }
-   Button_Change(button_object){
+   Button_Change(input_object){
         //turning button on after the delay
-        button_object.path[0].className = "button-on";
+        input_object.path[0].className = "button-on";
     }
-    updatespeed(){
-        this.speed = !this.speed;
-        if(this.speed){
-            document.querySelector('info-table').setAttribute("speed_cost",oTreeConstants.speed_cost);
-        }else {
-            document.querySelector('info-table').setAttribute("speed_cost",0);
-        }
-        var msg = {
-            type: 'speed_change',
-            id: oTreeConstants.player_id ,
-            id_in_group: oTreeConstants.player_id_in_group,
-            speed: this.speed
-        };
-        if (this.socket.readyState === this.socket.OPEN) {
-            this.socket.send(JSON.stringify(msg));
-        }
-        console.log(msg);
+    updatespeed(input_object){
+      console.log(input_object.path[3].querr("out"));
+ //        if(input_object.path[1].querySelector("#out").className == "button-on"){
+ //           alert("object");
+ // }
+          this.speed = !this.speed;
+          if(this.speed){
+              document.querySelector('info-table').setAttribute("speed_cost",oTreeConstants.speed_cost);
+          }else {
+              document.querySelector('info-table').setAttribute("speed_cost",0);
+          }
+
+          var msg = {
+              type: 'speed_change',
+              id: oTreeConstants.player_id ,
+              id_in_group: oTreeConstants.player_id_in_group,
+              speed: this.speed
+          };
+
+          if (this.socket.readyState === this.socket.OPEN) {
+              this.socket.send(JSON.stringify(msg));
+          }
+
+          console.log(msg);   
     }
-
-
 }
 
 
