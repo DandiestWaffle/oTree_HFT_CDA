@@ -216,6 +216,10 @@ border-radius: 50%;
      input_object.path[1].querySelector("#sniper").className = "button-off";
      //Turn off Speed if it is on the front end
      input_object.path[1].querySelector("#speed_checkbox").checked = false;
+     document.querySelector('info-table').setAttribute("speed_cost",0);
+     if(this.speed){
+     this.speed = !this.speed;
+    }
   }
 
    Button_Pressed(input_object){
@@ -228,7 +232,7 @@ border-radius: 50%;
         input_object.path[0].className = "button-on";
     }
     updatespeed(input_object){
-      console.log(input_object.path[3].querr("out"));
+          console.log(input_object);
  //        if(input_object.path[1].querySelector("#out").className == "button-on"){
  //           alert("object");
  // }
@@ -249,7 +253,6 @@ border-radius: 50%;
           if (this.socket.readyState === this.socket.OPEN) {
               this.socket.send(JSON.stringify(msg));
           }
-
           console.log(msg);   
     }
 }
