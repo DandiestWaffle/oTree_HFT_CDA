@@ -14,8 +14,20 @@
     <script type="module" src="{% static 'oTree_HFT_CDA/input-section/input-section.js' %}"></script>
 <script>
 (function(){
-    //Initializing Table Values
-    document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}"); 
+    /** Initializing all info table values **/
+
+    document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}");
+    document.querySelector('info-table').setAttribute("period_id","1"); 
+    document.querySelector('info-table').setAttribute("speed_cost","0"); 
+    document.querySelector('info-table').setAttribute("num_traders","{{Constants.players_per_group}}"); 
+    document.querySelector('info-table').setAttribute("player_role","Out"); 
+    document.querySelector('info-table').setAttribute("spread_value","N/A");     
+    document.querySelector('info-table').setAttribute("num_makers","0"); 
+    document.querySelector('info-table').setAttribute("num_snipers","0"); 
+    document.querySelector('info-table').setAttribute("profit","20"); 
+    document.querySelector('info-table').setAttribute("fp","{{player.fp}}"); 
+    document.querySelector('info-table').setAttribute("curr_bid","N/A"); 
+    document.querySelector('info-table').setAttribute("curr_ask","N/A"); 
 }());
 </script>
 
@@ -37,16 +49,18 @@
     
     (function(){
 
-        //Constant Information fron oTree
+        //Constant, Player, and Group Information from oTree stored in the oTreeConstants objects
         oTreeConstants.group_id = {{group.id}};
         oTreeConstants.player_id = {{player.id}};
-        oTreeConstants.player_id_in_group = {{player.id_in_group}};  
+        oTreeConstants.player_id_in_group = {{player.id_in_group}}; 
+        oTreeConstants.speed_cost = {{Constants.speed_cost}};  
 
         //Socket Connection
         var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
         var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");
-        // alert(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");  
+       
         socketActions.socket = socket;
+
         //     // Handle any errors that occur.
         socketActions.socket.onerror = function (error) {
             console.log('WebSocket Error: ' + error);
@@ -70,7 +84,6 @@
         socketActions.socket.onclose = function (event) {
             console.log('disconnected from oTree');
         };
-
     }());
 </script>
     <div class="front_end_controller">

@@ -1,8 +1,16 @@
 import {html, PolymerElement} from '../node_modules/@polymer/polymer/polymer-element.js';
-/**
- * @customElement
- * @polymer
- */
+/*
+ * This file defines the Info Table featured on the top of the main page using the Javascript Framework Polymer 3.0
+ * 
+ * The properties are the values that are information displayed to the user some are static (player_id) -
+ * while others are dynamic (profit,spread_value)
+ *
+ * If you want to change a value on the table use: - 
+ * document.querySelector('info-table').setAttribute("info_variable","info"); 
+ *
+ * This changes the value of player_role to Maker once the user presses the Maker button
+ * document.querySelector('info-table').setAttribute("player_role","Maker"); 
+*/
  
 class InfoTable extends PolymerElement {
   static get template() {

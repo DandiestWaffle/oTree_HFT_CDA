@@ -34,6 +34,7 @@ class Constants(BaseConstants):
     players_per_group = 2
     num_rounds = 1
     speed_cost = 0.1
+    
 
     default_maker_spread = 2
     max_spread = 10
