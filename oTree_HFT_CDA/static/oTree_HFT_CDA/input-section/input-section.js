@@ -209,8 +209,9 @@ border-radius: 50%;
 
     //     // Spread_Graph.spread(); // Auto Input Spread
     //     // Spread_Graph.drawMyLine(); // Auto input spread
-    }
        console.log(msg);
+    }
+       
      
      input_object.path[1].querySelector("#maker").className = "button-off";
      input_object.path[1].querySelector("#sniper").className = "button-off";
@@ -232,10 +233,9 @@ border-radius: 50%;
         input_object.path[0].className = "button-on";
     }
     updatespeed(input_object){
-          console.log(input_object);
- //        if(input_object.path[1].querySelector("#out").className == "button-on"){
- //           alert("object");
- // }
+      if(document.querySelector('info-table').getAttribute("player_role") != "Out"){
+          //If you arent out you can turn your speed on
+
           this.speed = !this.speed;
           if(this.speed){
               document.querySelector('info-table').setAttribute("speed_cost",oTreeConstants.speed_cost);
@@ -252,8 +252,12 @@ border-radius: 50%;
 
           if (this.socket.readyState === this.socket.OPEN) {
               this.socket.send(JSON.stringify(msg));
-          }
+          } 
           console.log(msg);   
+      } else {
+         input_object.path[0].checked = false;
+      }
+
     }
 }
 
