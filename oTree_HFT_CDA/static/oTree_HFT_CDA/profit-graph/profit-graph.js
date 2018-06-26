@@ -7,24 +7,23 @@ class ProfitGraph extends PolymerElement {
   static get template() {
     return html`
       <style>
-        :host {
-          display: block;
-        }
+
       </style>
-      <svg id="profit-graph"  >
-            
-      </svg>
+<svg id="spread-graph" style="width:[[width]]; height:[[height]];"></svg>
       <h2>[[prop1]]</h2>
     `;
   }
   static get properties() {
     return {
-      prop1: {
+      width: {
         type: String,
-        value: 'profit-graph'
+        value: Graph_Features.profit_width
+      },
+      height: {
+        type: String,
+        value: Graph_Features.profit_height
       }
-    };
-  }
+    };  }
 
 }
 
