@@ -1,21 +1,78 @@
 {% extends "global/Page.html" %}
 {% load staticfiles otree %}
 {% load staticfiles %}
+{% block content %}
+<style>
+    .front_end_controller{
+        width: 100%;
+        height: 100vh;
+        background-color: darkgrey;
+        margin-top: -80px;
+    }
+    spread-graph{
+        width: 25%;
+        height:100%;
+        margin-left:10px;
+        background-color:white;
+    }
+    profit-graph{
+        width:60%; 
+        height:100%; 
+        background-color: white; 
+        border-left:solid black 1px;
+    }
+    input-section{
+        margin-top:160px;
+        width: 10%;
+        height: 100%;
+    }
+</style>
+    
+    <!-- front_end_controller defines the whole user interface -->
+    <div class="front_end_controller">
+        
+        <!-- info-table is the top information diplay -->
+        <info-table></info-table>
+        
+        <!-- new row defining the interactive part of the front end -->
+        <div class="row" style="width:100%; height:100%;">
+            
+            <!-- left most graph displaying users changing profit -->
+            <profit-graph></profit-graph>
+            
+            <!-- middle graph displaying and able to be clicked to show spread  -->
+            <spread-graph></spread-graph>
+            
+            <!-- right most section comprised of the strategy buttons -->
+            <input-section></input-section>
+        
+        </div>
+    </div>
+<script>
+
+</script>
+{% endblock %}
 
 {% block scripts %}
     <script src="https://d3js.org/d3.v5.js"></script>
     <link rel="manifest" href="{% static 'oTree_HFT_CDA/manifest.json' %}">
     <script src="{% static 'oTree_HFT_CDA/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js' %}"></script>
-
-    <!-- <script type="module" src="{% static 'oTree_HFT_CDA/socket_connection/socket_connection.js' %}"></script> -->
     <script type="module" src="{% static 'oTree_HFT_CDA/profit-graph/profit-graph.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/info-table/info-table.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/spread-graph/spread-graph.js' %}"></script>
     <script type="module" src="{% static 'oTree_HFT_CDA/input-section/input-section.js' %}"></script>
 <script>
+    //Stores all the constants defined in Constansts in models.py and pulled from a presumed manifest file of some sort
+    var oTreeConstants ={};
+
+    //All socket actions are stored in this object to be used in the seperated js files
+    var socketActions = {};
+
+    //Graph features defines the features of the profit and spread graph to be used in the corresponding Shadow DOM constructors
+    var Graph_Features = {};
+
 (function(){
     /** Initializing all info table values **/
-
     document.querySelector('info-table').setAttribute("player_id","{{player.id_in_group}}");
     document.querySelector('info-table').setAttribute("period_id","1"); 
     document.querySelector('info-table').setAttribute("speed_cost","0"); 
@@ -28,77 +85,69 @@
     document.querySelector('info-table').setAttribute("fp","{{player.fp}}"); 
     document.querySelector('info-table').setAttribute("curr_bid","N/A"); 
     document.querySelector('info-table').setAttribute("curr_ask","N/A"); 
+
+/*
+IMPORTANT:
+Constant, Player, and Group Information from oTree stored in the oTreeConstants objects
+*/
+    oTreeConstants.group_id = {{group.id}};
+    oTreeConstants.player_id = {{player.id}};
+    oTreeConstants.player_id_in_group = {{player.id_in_group}}; 
+    oTreeConstants.speed_cost = {{Constants.speed_cost}};
+    oTreeConstants.max_spread = {{Constants.max_spread}}; 
+    oTreeConstants.default_spread = {{Constants.default_spread}};
+    // Not working for some reason oTreeConstants.smallest_spread = {{Constants.smallest_spread}};
+
+/*
+IMPORTANT:
+Graph_Features is an object that stores the features of the profit and spread graph that are only able to be retrieved in index.html. This object is used in spread-graph.js and profit-graph.js
+*/
+    Graph_Features.spread_width = $("spread-graph").width();
+    Graph_Features.spread_height = $("spread-graph").height();
+    Graph_Features.profit_width = $("profit-graph").width();
+    Graph_Features.profit_height = $("profit-graph").height();
+
+/*
+In order for our Shadow DOM Elements to be acessable in javascript we must set the mode to 'open', 'closed' is the other option and would restrict access to the Shadow DOM Elements. Since they are now open we can access them with js in their corressponding .js files
+*/
+    document.querySelector("spread-graph").attachShadow({mode: 'open'});
+    document.querySelector("profit-graph").attachShadow({mode: 'open'});
+
+/*
+Socket Actions
+*/
+    //Socket Connection
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");
+   
+    socketActions.socket = socket;
+
+    //     // Handle any errors that occur.
+    socketActions.socket.onerror = function (error) {
+        console.log('WebSocket Error: ' + error);
+    };
+
+    // Show a connected message when the WebSocket is opened.
+    socketActions.socket.onopen = function (event) {
+        console.log('Client has connected to django channels');
+    };
+
+    // Handle messages sent by the server.
+    socketActions.socket.onmessage = function (event) {
+        var obj = jQuery.parseJSON(event.data);
+        if(obj.FPC != undefined){
+            document.querySelector('info-table').setAttribute("fp",obj.FPC);
+        } 
+        // switch statement on type of data parsed from event
+    };
+
+    // Show a disconnected message when the WebSocket is closed.
+    socketActions.socket.onclose = function (event) {
+        console.log('disconnected from oTree');
+    };
 }());
 </script>
 
 
-{% endblock %}
-
-{% block content %}
-<style>
-    .front_end_controller{
-        width: 100%;
-        height: 100vh;
-        background-color: darkgrey;
-        margin-top: -80px;
-    }
-    spread-graph{
-          width: 25%;
-          height:100%;
-          margin-left:10px;
-          background-color:white;
-    }
-</style>
-<script>
-    var oTreeConstants ={};
-    var socketActions = {};
-    
-    (function(){
-
-        //Constant, Player, and Group Information from oTree stored in the oTreeConstants objects
-        oTreeConstants.group_id = {{group.id}};
-        oTreeConstants.player_id = {{player.id}};
-        oTreeConstants.player_id_in_group = {{player.id_in_group}}; 
-        oTreeConstants.speed_cost = {{Constants.speed_cost}};  
-
-        //Socket Connection
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/hft/{{group.id}}/{{player.id}}/");
-       
-        socketActions.socket = socket;
-
-        //     // Handle any errors that occur.
-        socketActions.socket.onerror = function (error) {
-            console.log('WebSocket Error: ' + error);
-        };
-
-        // Show a connected message when the WebSocket is opened.
-        socketActions.socket.onopen = function (event) {
-            console.log('Client has connected to django channels');
-        };
-
-        // Handle messages sent by the server.
-        socketActions.socket.onmessage = function (event) {
-            var obj = jQuery.parseJSON(event.data);
-            if(obj.FPC != undefined){
-                document.querySelector('info-table').setAttribute("fp",obj.FPC);
-            } 
-            // switch statement on type of data parsed from event
-        };
-
-        // Show a disconnected message when the WebSocket is closed.
-        socketActions.socket.onclose = function (event) {
-            console.log('disconnected from oTree');
-        };
-    }());
-</script>
-    <div class="front_end_controller">
-        <info-table id="info-table"></info-table>
-        <div class="row" style="width:100%; height:100%;">
-        <profit-graph style="width:60%; height:100%; background-color: white; border-left:solid black 1px;"></profit-graph>
-        <spread-graph></spread-graph>
-        <input-section style="margin-top:160px; width: 10%; height: 100%;"></input-section>
-        </div>
-    </div>
 {% endblock %}
 

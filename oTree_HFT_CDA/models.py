@@ -35,9 +35,10 @@ class Constants(BaseConstants):
     num_rounds = 1
     speed_cost = 0.1
     
-
-    default_maker_spread = 2
-    max_spread = 10
+    #Spread Information for Maker
+    default_spread = 1000
+    max_spread = 2000
+    smallest_spread = {"key":-1,"spread":max_spread}
 
 
     inv_py = os.path.join(os.getcwd(), 'oTree_HFT_CDA/exos/investor.py')
