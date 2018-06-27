@@ -66,24 +66,66 @@ class SpreadGraph extends PolymerElement {
 
     //d3 Selection of the SVG we will be using this variable from now on
     this.spread_svg = d3.select(this.spread_svg_dom);
-
-    
+    console.log(this.spread_svg + "What the fuck");
+    /*Drawing the start state when the window opens*/
     var spread_line = this.spread_svg.append("svg:line")
-      .attr("x1", this.spread_width/2)
-      .attr("y1", 0)
-      .attr("x2", this.spread_width/2)
-      .attr("y2", this.spread_height)
-      .style("stroke", "lightgrey")
-      .style("stroke-width", 5);
+                       .attr("x1", this.spread_width/2)
+                       .attr("y1", 0)
+                       .attr("x2", this.spread_width/2)
+                       .attr("y2", this.spread_height)
+                       .style("stroke", "lightgrey")
+                       .style("stroke-width", 5);
 
     var spread_line_fundamental_price = this.spread_svg.append("svg:line")
-      .attr("x1", 0 + 45)
-      .attr("y1", this.spread_height/2)
-      .attr("x2", this.spread_width - 45)
-      .attr("y2", this.spread_height/2)
-      .style("stroke", "grey")
-      .style("stroke-width", 5);
-   }
+                       .attr("x1", 45)
+                       .attr("y1", this.spread_height/2 - 65)
+                       .attr("x2", this.spread_width - 45)
+                       .attr("y2", this.spread_height/2 - 65)
+                       .style("stroke", "grey")
+                       .style("stroke-width", 5);
+
+    //Adding an event listener when the spread-graph svg is clicked
+    // this.spread_svg_dom.addEventListener('click', svg_object => {this.svgClickListener(svg_object)});
+    console.log(this.spread_svg);
+    this.spread_svg.on('click',function(d) { 
+      var role = document.querySelector('info-table').player_role;
+        if(role == "Maker"){
+
+          var spread_x = Graph_Features.spread_x;
+          var spread_y = Graph_Features.spread_y;
+
+          var svg_middle_x = this.spread_width / 2;
+          var fp_line_y = this.spread_height / 2;
+
+          console.log(fp_line_y);
+          var clicked_point = {
+            x:(d3.event.clientX - spread_x),
+            y:(d3.event.clientY - spread_y)
+          };
+
+          var distance_from_middle = Math.abs(clicked_point.y - fp_line_y);
+
+        }
+  });
+  //   console.log(this.spread_svg);
+  }
+  svgClickListener(svg_object) {
+    //Role gives you the player_role that is in the info-table
+    // var role = document.querySelector('info-table').player_role;
+    // if(role == "Maker"){
+    //   var spread_x = svg_object.target.getBoundingClientRect().left;
+    //   var spread_y = svg_object.target.getBoundingClientRect().top;
+    //   console.log(spread_x + " " + spread_y);
+
+    //   var svg_middle_x = this.spread_width / 2;
+    //   var fp_line_y = this.spread_height / 2;
+    //   var clicked_point = {
+    //     x:(d3.event.clientX - spread_x),
+    //     y:(d3.event.clientY - spread_y)
+    //   };
+    // }
+    // console.info(svg_object.target);
+  }
 
 
                                 

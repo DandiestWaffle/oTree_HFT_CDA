@@ -103,8 +103,13 @@ Constant, Player, and Group Information from oTree stored in the oTreeConstants 
 IMPORTANT:
 Graph_Features is an object that stores the features of the profit and spread graph that are only able to be retrieved in index.html. This object is used in spread-graph.js and profit-graph.js
 */
+    //SPREAD GRAPH
     Graph_Features.spread_width = $("spread-graph").width();
     Graph_Features.spread_height = $("spread-graph").height();
+    Graph_Features.spread_x = document.querySelector("spread-graph").getBoundingClientRect().left;
+    Graph_Features.spread_y = document.querySelector("spread-graph").getBoundingClientRect().top;
+
+    //PROFIT GRAPH
     Graph_Features.profit_width = $("profit-graph").width();
     Graph_Features.profit_height = $("profit-graph").height();
 
